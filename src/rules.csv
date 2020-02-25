@@ -1,0 +1,3 @@
+﻿COMMAND,HOWTOREACT,CMDTYPE,DOMAIN
+int,parseInt(x),labelled,set of Z
+float,parseFloat(x),labelled,set of Zq
