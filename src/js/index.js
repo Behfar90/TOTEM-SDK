@@ -33,10 +33,14 @@ function getInputValue() {
     var userCodeValue = $("#userCode").val()
     var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
     allCodeValueLines.forEach(userLine => {
-        var chunkedLine = userLine.split(" ")
-        var reaction = getRuleReaction(chunkedLine[0])
+        var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
+        var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
+        var reaction = getRuleReaction(chunkedLine_cmd)
         console.log('reaction: ',reaction)
         // continue
+        if (reaction) {
+            console.log('chunkedLine: ',chunkedLine_assignment)
+        }
     });
 }
 
@@ -48,7 +52,7 @@ function getRuleReaction(cmdUser) {
             return ruleLine.get("HOWTOREACT");
         }
     }
-    return 'null'
+    return false
 }
 
 
