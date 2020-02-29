@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <title></title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+    <script type="module" src="js/SDK.js"></script>
 </head>
 <body>
-    <div style="width: 200px; height: 500px;">
+    <div style="width: 200px; height: auto;">
     <textarea id="userCode" rows="10" style="width: 100%; height: 70%;" ></textarea>
-    <button type="button" onclick="getInputValue();">Run</button>
+    <button type="button">Run</button>
     </div>
+    <p id="error" style="color: #FF0000;"></p>
+    
 </body>
 </html>
 
