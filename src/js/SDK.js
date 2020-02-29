@@ -1,5 +1,6 @@
 // importing stuff
-import { commandErrorHandler } from './errorHandler.js';
+import { commandErrorHandler } from './handlers/errorHandler.js';
+import { handleNumber } from './handlers/executionHandler.js';
 
 // Global variables
 var ruleLines = new Array(); //variable to keep rules
@@ -39,10 +40,21 @@ document.querySelector('button').addEventListener("click", function (){
         var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
         var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
         var reaction = getRuleReaction(chunkedLine_cmd)
-        console.log('reaction: ',reaction)
         // continue
         if (reaction) {
-            console.log('chunkedCMD: ',chunkedLine_assignment)
+            let chunkedLine_assignment_chunkes = chunkedLine_assignment.split(',')
+            chunkedLine_assignment_chunkes.forEach(chunk => {
+                let plain_chunk = chunk.replace(/\s/g,'');
+                switch (reaction) {
+                    case "handleNumber":
+                        handleNumber(plain_chunk);
+                        break;
+                
+                    default:
+                        //should throw error that is not defined
+                }
+                // console.log( typeof chunk.trim())
+            })
         } else {
             commandErrorHandler(chunkedLine_cmd)
         }
