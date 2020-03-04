@@ -1,5 +1,5 @@
 // importing stuff
-import { commandErrorHandler } from './handlers/errorHandler.js';
+import { commandErrorHandler, namingErrorHandler } from './handlers/errorHandler.js';
 import { handleNumber } from './handlers/executionHandler.js';
 
 // Global variables
@@ -32,35 +32,6 @@ function processRules(allText) {
     console.log(ruleLines) // just to see rules at console
 }
 
-// func to process and execute user's code
-document.querySelector('button').addEventListener("click", function (){
-    var userCodeValue = $("#userCode").val()
-    var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
-    allCodeValueLines.forEach(userLine => {
-        var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
-        var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
-        var reaction = getRuleReaction(chunkedLine_cmd)
-        // continue
-        if (reaction) {
-            let chunkedLine_assignment_chunkes = chunkedLine_assignment.split(',')
-            chunkedLine_assignment_chunkes.forEach(chunk => {
-                let plain_chunk = chunk.replace(/\s/g,'');
-                switch (reaction) {
-                    case "handleNumber":
-                        handleNumber(plain_chunk);
-                        break;
-                
-                    default:
-                        //should throw error that is not defined
-                }
-                // console.log( typeof chunk.trim())
-            })
-        } else {
-            commandErrorHandler(chunkedLine_cmd)
-        }
-    });
-})
-
 // func to search through the commands and return its appropriate reaction
 function getRuleReaction(cmdUser) {
     for (let ruleLine of ruleLines) {
@@ -71,5 +42,38 @@ function getRuleReaction(cmdUser) {
     }
     return false
 }
+
+// func to process and execute user's code
+document.querySelector('button').addEventListener("click", function (){
+    var userCodeValue = $("#userCode").val()
+    var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
+    allCodeValueLines = allCodeValueLines.filter(line => line);
+    allCodeValueLines.forEach(userLine => {
+        var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
+        var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
+        var reaction = getRuleReaction(chunkedLine_cmd)
+        // continue
+        if (reaction) {
+            let chunkedLine_assignment_chunkes = chunkedLine_assignment.split(',')
+            chunkedLine_assignment_chunkes.forEach(chunk => {
+                let plain_chunk = chunk.replace(/\s/g,'');
+                if (isNaN(parseInt(plain_chunk)) && plain_chunk !== "") { // check naming convention
+                    switch (reaction) {
+                        case "handleNumber":
+                            handleNumber(plain_chunk, chunkedLine_cmd);
+                            break;
+                    
+                        default:
+                            $('#error').append('There is no defined handler to compile command '+chunkedLine_cmd+'.<br />')
+                    }
+                } else {
+                    namingErrorHandler(plain_chunk)
+                }
+            })
+        } else {
+            commandErrorHandler(chunkedLine_cmd)
+        }
+    });
+})
 
 

@@ -1,3 +1,3 @@
 ﻿COMMAND,HOWTOREACT,CMDTYPE,DOMAIN
 int,handleNumber,labelled,set of Z
-float,handleNumber,labelled,set of Zq
+float,handleNumber,labelled,set of Q
