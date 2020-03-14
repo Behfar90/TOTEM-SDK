@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "build": "browserify ./src/js/SDK.js -o ./src/index.js",
+    "watch": "watchify ./src/js/SDK.js -o ./src/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/Behfar90/TOTEM-SDK#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "browserify": "^16.5.0",
+    "jquery": "^3.4.1",
+    "watchify": "^3.11.1"
   }
 }

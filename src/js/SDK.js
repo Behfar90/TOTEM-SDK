@@ -1,6 +1,7 @@
 // importing stuff
-import { commandErrorHandler } from './handlers/errorHandler.js';
-import { typeController } from './controller/controller.js'
+let errorHandler = require('./handlers/errorHandler.js');
+let controller = require('./controllers/controller.js');
+var $ = require('jquery')
 
 // Global variables
 var ruleLines = new Array(); //variable to keep rules
@@ -8,7 +9,7 @@ var ruleLines = new Array(); //variable to keep rules
 $(document).ready(function() {
     $.ajax({
         type: "GET",
-        url: "rules.csv",
+        url: "./rules/rules.csv",
         dataType: "text",
         success: function(data) {processRules(data);}
      });
@@ -54,11 +55,9 @@ document.querySelector('button').addEventListener("click", function (){
         var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
         var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
         console.log('Type:',type,', Reaction:',reaction)
-        // continue
+        // continuex    
         reaction
-           ? typeController(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
-           : commandErrorHandler(chunkedLine_cmd)
+           ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
+           : errorHandler.commandErrorHandler(chunkedLine_cmd)
     });
 })
-
-

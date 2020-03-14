@@ -2,7 +2,7 @@
 var userDefined_vars = {};
 
 // func to handle numbers
-function handleNumber(chunk, cmd) {
+let handleNumber = function handleNumber(chunk, cmd) {
     if (chunk.includes('=')){
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
@@ -21,4 +21,4 @@ function handleNumber(chunk, cmd) {
     console.log('vars: ',userDefined_vars)
 }
 
-export {handleNumber}
+module.exports = {handleNumber: handleNumber}

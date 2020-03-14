@@ -1,5 +1,7 @@
+var $ = require('jquery') //importing jquery
+
 // making user-readable error if command is not right
-function commandErrorHandler(cmd) {
+let commandError = function commandErrorHandler(cmd) {
     // this line should shows <-- in the text area
     cmd.length
     ? $('#error').append('Command '+cmd+' is not defined/allowed.<br />')
@@ -7,10 +9,13 @@ function commandErrorHandler(cmd) {
   }
 
   // making user-readable error if var name is against naming convention
-  function namingErrorHandler(assignment) {
+  let namingError = function namingErrorHandler(assignment) {
     assignment.includes('=')
     ? $('#error').append('Variable name '+assignment.substr(0, assignment.indexOf('='))+' is not allowed.<br />')
     : $('#error').append('Variable name '+assignment+' is not allowed/defined.<br />')
   }
 
-export {commandErrorHandler, namingErrorHandler}
+module.exports = {
+    commandError: commandError,
+    namingError: namingError 
+}
