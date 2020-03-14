@@ -9,7 +9,6 @@ function handleNumber(chunk, cmd) {
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
             : userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
-            console.log(userDefined_vars)
         } else {
                 // if the var is defined or not and computational funcs
                 // complete this part later
@@ -17,9 +16,8 @@ function handleNumber(chunk, cmd) {
 
     } else {
         userDefined_vars[chunk] = 0; // default is var = 0
-        console.log(userDefined_vars)
     }
-
+    console.log('vars: ',userDefined_vars)
 }
 
 export {handleNumber}

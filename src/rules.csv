@@ -1,3 +1,4 @@
 ﻿COMMAND,HOWTOREACT,CMDTYPE,DOMAIN
 int,handleNumber,labelled,set of Z
 float,handleNumber,labelled,set of Q
+for,handleForLoop,controlStatement,labelledVars

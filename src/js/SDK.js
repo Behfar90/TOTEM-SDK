@@ -1,6 +1,6 @@
 // importing stuff
-import { commandErrorHandler, namingErrorHandler } from './handlers/errorHandler.js';
-import { handleNumber } from './handlers/executionHandler.js';
+import { commandErrorHandler } from './handlers/errorHandler.js';
+import { typeController } from './controller/controller.js'
 
 // Global variables
 var ruleLines = new Array(); //variable to keep rules
@@ -32,12 +32,12 @@ function processRules(allText) {
     console.log(ruleLines) // just to see rules at console
 }
 
-// func to search through the commands and return its appropriate reaction
-function getRuleReaction(cmdUser) {
+// func to search through the commands and return its appropriate reaction and type
+function getRuleValues(cmdUser, key) {
     for (let ruleLine of ruleLines) {
         var cmdValue = ruleLine.get("COMMAND")
         if (cmdUser === cmdValue ){
-            return ruleLine.get("HOWTOREACT");
+            return ruleLine.get(key);
         }
     }
     return false
@@ -51,28 +51,13 @@ document.querySelector('button').addEventListener("click", function (){
     allCodeValueLines.forEach(userLine => {
         var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
         var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
-        var reaction = getRuleReaction(chunkedLine_cmd)
+        var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
+        var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
+        console.log('Type:',type,', Reaction:',reaction)
         // continue
-        if (reaction) {
-            let chunkedLine_assignment_chunkes = chunkedLine_assignment.split(',')
-            chunkedLine_assignment_chunkes.forEach(chunk => {
-                let plain_chunk = chunk.replace(/\s/g,'');
-                if (isNaN(parseInt(plain_chunk)) && plain_chunk !== "") { // check naming convention
-                    switch (reaction) {
-                        case "handleNumber":
-                            handleNumber(plain_chunk, chunkedLine_cmd);
-                            break;
-                    
-                        default:
-                            $('#error').append('There is no defined handler to compile command '+chunkedLine_cmd+'.<br />')
-                    }
-                } else {
-                    namingErrorHandler(plain_chunk)
-                }
-            })
-        } else {
-            commandErrorHandler(chunkedLine_cmd)
-        }
+        reaction
+           ? typeController(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
+           : commandErrorHandler(chunkedLine_cmd)
     });
 })
 
