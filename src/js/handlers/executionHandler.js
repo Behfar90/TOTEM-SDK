@@ -1,6 +1,7 @@
 // user-defined variables as a global hash map
 var userDefined_vars = {};
 
+// func to handle numbers
 function handleNumber(chunk, cmd) {
     if (chunk.includes('=')){
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
