@@ -10659,7 +10659,7 @@ document.querySelector('button').addEventListener("click", function (){
         // continuex    
         reaction
            ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
-           : errorHandler.commandErrorHandler(chunkedLine_cmd)
+           : errorHandler.commandError(chunkedLine_cmd)
     });
 })
 },{"./controllers/controller.js":3,"./handlers/errorHandler.js":4,"jquery":1}],3:[function(require,module,exports){
@@ -10735,6 +10735,7 @@ let handleNumber = function handleNumber(chunk, cmd) {
     if (chunk.includes('=')){
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
+        console.log(isNaN(parseInt(righSideOfEquition)))
         if ( !isNaN(parseInt(righSideOfEquition)) ) {
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)

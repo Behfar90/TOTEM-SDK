@@ -58,6 +58,6 @@ document.querySelector('button').addEventListener("click", function (){
         // continuex    
         reaction
            ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
-           : errorHandler.commandErrorHandler(chunkedLine_cmd)
+           : errorHandler.commandError(chunkedLine_cmd)
     });
 })

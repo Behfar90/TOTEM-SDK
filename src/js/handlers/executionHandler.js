@@ -6,6 +6,7 @@ let handleNumber = function handleNumber(chunk, cmd) {
     if (chunk.includes('=')){
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
+        console.log(isNaN(parseInt(righSideOfEquition)))
         if ( !isNaN(parseInt(righSideOfEquition)) ) {
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
