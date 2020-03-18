@@ -21,5 +21,8 @@
     "browserify": "^16.5.0",
     "jquery": "^3.4.1",
     "watchify": "^3.11.1"
+  },
+  "devDependencies": {
+    "exact-math": "^2.1.2"
   }
 }
