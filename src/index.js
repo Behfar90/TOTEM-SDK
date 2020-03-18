@@ -10672,16 +10672,15 @@ document.querySelector('button').addEventListener("click", function (){
            : errorHandler.commandError(chunkedLine_cmd)
     });
 })
-},{"./controllers/controller.js":7,"./handlers/errorHandler.js":8,"jquery":2}],7:[function(require,module,exports){
+},{"./controllers/controller.js":7,"./handlers/errorHandler.js":9,"jquery":2}],7:[function(require,module,exports){
 // importing stuff
-let executionHandler = require('../handlers/executionHandler.js');
-let errorHandler = require('../handlers/errorHandler.js');
+let labelledTypeController = require('../controllers/labelledTypeController.js');
 
 // func to check the cmd type and exec the related controller
 let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd, type, reaction) {
     switch (type) {
         case "labelled":
-            labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
+            labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
         
     
@@ -10690,11 +10689,20 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
     }
 }
 
+module.exports = {
+    controller: controller,
+}
+},{"../controllers/labelledTypeController.js":8}],8:[function(require,module,exports){
+// importing stuff
+let executionHandler = require('../handlers/executionHandler.js');
+let errorHandler = require('../handlers/errorHandler.js');
+
 // func to control labelled type variables
-function labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction) {
-    let chunkedLine_assignment_chunkes = chunkedLine_assignment.split(',')
+let labelledTypeController = function labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction) {
+    let chunkedLine_assignment_chunkes = chunkedLine_assignment.split(/\s*,\s*(?![^(]*\))/)
             chunkedLine_assignment_chunkes.forEach(chunk => {
                 let plain_chunk = chunk.replace(/\s/g,'');
+                console.log('plainChunk= ',plain_chunk)
                 if (isNaN(parseInt(plain_chunk)) && plain_chunk !== "") { // check naming convention
                     switch (reaction) {
                         case "handleNumber":
@@ -10711,9 +10719,9 @@ function labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reactio
 }
 
 module.exports = {
-    controller: controller,
+    labelledTypeController: labelledTypeController,
 }
-},{"../handlers/errorHandler.js":8,"../handlers/executionHandler.js":9}],8:[function(require,module,exports){
+},{"../handlers/errorHandler.js":9,"../handlers/executionHandler.js":10}],9:[function(require,module,exports){
 var $ = require('jquery') //importing jquery
 
 // making user-readable error if command is not right
@@ -10736,7 +10744,7 @@ module.exports = {
     namingError: namingError 
 }
 
-},{"jquery":2}],9:[function(require,module,exports){
+},{"jquery":2}],10:[function(require,module,exports){
 // importing stuff
 let ops = require('./operationsHandler.js')
 
@@ -10774,7 +10782,7 @@ function opsDetector(target, pattern) {
 }
 
 module.exports = {handleNumber: handleNumber}
-},{"./operationsHandler.js":10}],10:[function(require,module,exports){
+},{"./operationsHandler.js":11}],11:[function(require,module,exports){
 // importing stuff
 const exactMath = require('exact-math');
 
