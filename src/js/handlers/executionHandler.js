@@ -11,7 +11,8 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
-        console.log(isOperation)
+        let noError = true;
+        
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
@@ -28,12 +29,14 @@ let handleNumber = function handleNumber(chunk, cmd) {
                             this[i] = userDefined_vars[arg]
                         }
                         else {
-                            console.log('error')
+                            errorHandler.operationError('undefinedVar',arg)
+                            noError = false // to stop the rest from executing
                         }
                     }
                 }, arguments);
                 // console.log(arguments)
-                switch (isOperation[1]) {
+                if (noError) {
+                   switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
                         break;
@@ -50,7 +53,9 @@ let handleNumber = function handleNumber(chunk, cmd) {
                         userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
                         break;
 
+                    }
                 }
+                
             }
             else {
                 errorHandler.operationError('argNumberError',isOperation[1])

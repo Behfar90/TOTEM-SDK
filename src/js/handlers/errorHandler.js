@@ -15,19 +15,22 @@ let commandError = function commandErrorHandler(cmd) {
     : $('#error').append('Variable name '+assignment+' is not allowed/defined.<br />')
   }
 
-  let operationError = function operationErrorHandler(errorType, funcName) {
+  // throwing error if anything not allowed or incorrect happens during operation functions
+  let operationError = function operationErrorHandler(errorType, name) {
     switch (errorType) {
       case 'argNumberError':
         $('#error').append('There must be 2 arguments in operating functions.<br />')
-        break;
+        break
       case 'noSuchOperation':
-        $('#error').append('The function ' + funcName + ' is not defined.<br />')
+        $('#error').append('The function ' + name + ' is not defined.<br />')
         break;
-    
-      default:
+      case 'undefinedVar':  
+        $('#error').append('Variable ' + name + ' is not defined.<br />')
         break;
     }
   }
+
+
 
 module.exports = {
     commandError: commandError,

@@ -10738,19 +10738,22 @@ let commandError = function commandErrorHandler(cmd) {
     : $('#error').append('Variable name '+assignment+' is not allowed/defined.<br />')
   }
 
-  let operationError = function operationErrorHandler(errorType, funcName) {
+  // throwing error if anything not allowed or incorrect happens during operation functions
+  let operationError = function operationErrorHandler(errorType, name) {
     switch (errorType) {
       case 'argNumberError':
         $('#error').append('There must be 2 arguments in operating functions.<br />')
-        break;
+        break
       case 'noSuchOperation':
-        $('#error').append('The function ' + funcName + ' is not defined.<br />')
+        $('#error').append('The function ' + name + ' is not defined.<br />')
         break;
-    
-      default:
+      case 'undefinedVar':  
+        $('#error').append('Variable ' + name + ' is not defined.<br />')
         break;
     }
   }
+
+
 
 module.exports = {
     commandError: commandError,
@@ -10772,7 +10775,8 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
-        console.log(isOperation)
+        let noError = true;
+        
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
@@ -10789,12 +10793,14 @@ let handleNumber = function handleNumber(chunk, cmd) {
                             this[i] = userDefined_vars[arg]
                         }
                         else {
-                            console.log('error')
+                            errorHandler.operationError('undefinedVar',arg)
+                            noError = false // to stop the rest from executing
                         }
                     }
                 }, arguments);
                 // console.log(arguments)
-                switch (isOperation[1]) {
+                if (noError) {
+                   switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
                         break;
@@ -10811,7 +10817,9 @@ let handleNumber = function handleNumber(chunk, cmd) {
                         userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
                         break;
 
+                    }
                 }
+                
             }
             else {
                 errorHandler.operationError('argNumberError',isOperation[1])
