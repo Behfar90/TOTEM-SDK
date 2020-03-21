@@ -10738,14 +10738,30 @@ let commandError = function commandErrorHandler(cmd) {
     : $('#error').append('Variable name '+assignment+' is not allowed/defined.<br />')
   }
 
+  let operationError = function operationErrorHandler(errorType, funcName) {
+    switch (errorType) {
+      case 'argNumberError':
+        $('#error').append('There must be 2 arguments in operating functions.<br />')
+        break;
+      case 'noSuchOperation':
+        $('#error').append('The function ' + funcName + ' is not defined.<br />')
+        break;
+    
+      default:
+        break;
+    }
+  }
+
 module.exports = {
     commandError: commandError,
-    namingError: namingError 
+    namingError: namingError,
+    operationError: operationError
 }
 
 },{"jquery":2}],10:[function(require,module,exports){
 // importing stuff
 let ops = require('./operationsHandler.js')
+let errorHandler = require('./errorHandler.js')
 
 // user-defined variables as a global hash map
 var userDefined_vars = {};
@@ -10756,15 +10772,16 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
+        console.log(isOperation)
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
             : userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
         }
-        else if( isOperation ) {
+        else if( isOperation[0] ) {
             console.log('there is an operation')
             var arguments = righSideOfEquition.match(/\((.*)\)/).pop().split(',')
-            if (arguments.length != 2) { // number of arguments should be exactly 2
+            if (arguments.length == 2) { // number of arguments should be exactly 2
                 arguments.forEach( function(arg, i) {
                     if ( isNaN(arg) ) {
                         if (Object.keys(userDefined_vars).includes(arg)) {
@@ -10776,8 +10793,8 @@ let handleNumber = function handleNumber(chunk, cmd) {
                         }
                     }
                 }, arguments);
-
-                switch (isOperation) {
+                // console.log(arguments)
+                switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
                         break;
@@ -10792,19 +10809,17 @@ let handleNumber = function handleNumber(chunk, cmd) {
                         break;
                     case "pow":
                         userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
-                        break;   
-    
-                    default:
                         break;
+
                 }
             }
             else {
-                
+                errorHandler.operationError('argNumberError',isOperation[1])
             }
-           
         }
         else {
-            // write some error for nothing
+            // passing the incorrect function name into operation error handler
+            errorHandler.operationError('noSuchOperation',isOperation[1])
         }
 
     } else {
@@ -10815,18 +10830,18 @@ let handleNumber = function handleNumber(chunk, cmd) {
 
 // func to find if user has used one the allowed ops
 function opsDetector(target, pattern) {
-    opt = ""
-    target = target.replace(/[()](.*)/g, '')
+    opt = false
+    funcName = target.replace(/[()](.*)/g, '')
     pattern.forEach(op => {
-        if (target==op) {
-            opt = target
+        if (funcName==op) {
+            opt = true
         }
     });
-    return opt
+    return [opt,funcName]
 }
 
 module.exports = {handleNumber: handleNumber}
-},{"./operationsHandler.js":11}],11:[function(require,module,exports){
+},{"./errorHandler.js":9,"./operationsHandler.js":11}],11:[function(require,module,exports){
 // importing stuff
 const exactMath = require('exact-math');
 
