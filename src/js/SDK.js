@@ -1,6 +1,7 @@
 // importing stuff
 let errorHandler = require('./handlers/errorHandler.js');
 let controller = require('./controllers/controller.js');
+let executionHandler = require('./handlers/executionHandler.js')
 var $ = require('jquery')
 
 // Global variables
@@ -60,4 +61,5 @@ document.querySelector('button').addEventListener("click", function (){
            ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
            : errorHandler.commandError(chunkedLine_cmd)
     });
+    console.log('vars: ',executionHandler.userDefined_vars)
 })

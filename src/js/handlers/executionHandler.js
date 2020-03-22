@@ -69,7 +69,6 @@ let handleNumber = function handleNumber(chunk, cmd) {
     } else {
         userDefined_vars[chunk] = 0; // default is var = 0
     }
-    console.log('vars: ',userDefined_vars)
 }
 
 // func to find if user has used one the allowed ops
@@ -84,4 +83,7 @@ function opsDetector(target, pattern) {
     return [opt,funcName]
 }
 
-module.exports = {handleNumber: handleNumber}
+module.exports = {
+    handleNumber: handleNumber,
+    userDefined_vars: userDefined_vars
+}

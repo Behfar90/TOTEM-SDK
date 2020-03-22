@@ -10612,6 +10612,7 @@ module.exports=function(modules){var installedModules={};function __webpack_requ
 // importing stuff
 let errorHandler = require('./handlers/errorHandler.js');
 let controller = require('./controllers/controller.js');
+let executionHandler = require('./handlers/executionHandler.js')
 var $ = require('jquery')
 
 // Global variables
@@ -10671,8 +10672,9 @@ document.querySelector('button').addEventListener("click", function (){
            ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
            : errorHandler.commandError(chunkedLine_cmd)
     });
+    console.log('vars: ',executionHandler.userDefined_vars)
 })
-},{"./controllers/controller.js":7,"./handlers/errorHandler.js":9,"jquery":2}],7:[function(require,module,exports){
+},{"./controllers/controller.js":7,"./handlers/errorHandler.js":9,"./handlers/executionHandler.js":10,"jquery":2}],7:[function(require,module,exports){
 // importing stuff
 let labelledTypeController = require('../controllers/labelledTypeController.js');
 
@@ -10682,11 +10684,16 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
         case "labelled":
             labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
-        
+        case "controlStatement":
+            controlStatementController()
     
         default:
             break;
     }
+}
+
+function controlStatementController() {
+    
 }
 
 module.exports = {
@@ -10833,7 +10840,6 @@ let handleNumber = function handleNumber(chunk, cmd) {
     } else {
         userDefined_vars[chunk] = 0; // default is var = 0
     }
-    console.log('vars: ',userDefined_vars)
 }
 
 // func to find if user has used one the allowed ops
@@ -10848,7 +10854,10 @@ function opsDetector(target, pattern) {
     return [opt,funcName]
 }
 
-module.exports = {handleNumber: handleNumber}
+module.exports = {
+    handleNumber: handleNumber,
+    userDefined_vars: userDefined_vars
+}
 },{"./errorHandler.js":9,"./operationsHandler.js":11}],11:[function(require,module,exports){
 // importing stuff
 const exactMath = require('exact-math');

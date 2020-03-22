@@ -7,11 +7,16 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
         case "labelled":
             labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
-        
+        case "controlStatement":
+            controlStatementController()
     
         default:
             break;
     }
+}
+
+function controlStatementController() {
+    
 }
 
 module.exports = {
