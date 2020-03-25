@@ -12,7 +12,7 @@ let labelledTypeController = function labelledTypeController(chunkedLine_assignm
                         case "handleNumber":
                             executionHandler.handleNumber(plain_chunk, chunkedLine_cmd);
                             break;
-
+                        // place to handle future defined labelled type variables
                         default:
                             $('#error').append('There is no defined handler to compile command '+chunkedLine_cmd+'.<br />')
                     }

@@ -1,5 +1,6 @@
 // importing stuff
 let labelledTypeController = require('../controllers/labelledTypeController.js');
+let controlStatementController = require('../controllers/controlStatementController.js');
 
 // func to check the cmd type and exec the related controller
 let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd, type, reaction) {
@@ -8,15 +9,11 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
             labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
         case "controlStatement":
-            controlStatementController()
+            controlStatementController.controlStatementController()
     
         default:
             break;
     }
-}
-
-function controlStatementController() {
-    
 }
 
 module.exports = {
