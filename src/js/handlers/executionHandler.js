@@ -71,6 +71,60 @@ let handleNumber = function handleNumber(chunk, cmd) {
     }
 }
 
+
+// func to handle operations on previously-defined vars
+let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
+    let plain_assignment = assignment.replace(/\s/g,'');
+    let noError = true;
+    if (plain_assignment.includes('=')) {
+        let righSideOfEquition = plain_assignment.substr(plain_assignment.indexOf("=") + 1)
+        let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
+        if( isOperation[0] ) {
+            console.log('there is an operation')
+            var arguments = righSideOfEquition.match(/\((.*)\)/).pop().split(',')
+            if (arguments.length == 2) { // number of arguments should be exactly 2
+                arguments.forEach( function(arg, i) {
+                    if ( isNaN(arg) ) {
+                        if (Object.keys(userDefined_vars).includes(arg)) {
+                            // to give the argument the value ut got before by user
+                            this[i] = userDefined_vars[arg]
+                        }
+                        else {
+                            errorHandler.operationError('undefinedVar',arg)
+                            noError = false // to stop the rest from executing
+                        }
+                    }
+                }, arguments);
+                // console.log(arguments)
+                if (noError) {
+                   switch (isOperation[1]) {
+                    case "add":
+                        userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
+                        break;
+                    case "sub":
+                        userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
+                        break;
+                    case "mul":
+                        userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
+                        break;
+                    case "div":
+                        userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
+                        break;
+                    case "pow":
+                        userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
+                        break;
+
+                    }
+                }
+                
+            }
+            else {
+                errorHandler.operationError('argNumberError',isOperation[1])
+            }
+        }
+    }
+}
+
 // func to find if user has used one the allowed ops
 function opsDetector(target, pattern) {
     opt = false
@@ -85,5 +139,6 @@ function opsDetector(target, pattern) {
 
 module.exports = {
     handleNumber: handleNumber,
+    handleMoreOps: handleMoreOps,
     userDefined_vars: userDefined_vars
 }

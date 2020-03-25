@@ -6,6 +6,7 @@ var $ = require('jquery')
 
 // Global variables
 var ruleLines = new Array(); //variable to keep rules
+var globalVars = executionHandler.userDefined_vars //global vars defined by user
 
 $(document).ready(function() {
     $.ajax({
@@ -51,15 +52,20 @@ document.querySelector('button').addEventListener("click", function (){
     var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
     allCodeValueLines = allCodeValueLines.filter(line => line);
     allCodeValueLines.forEach(userLine => {
+
         var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
         var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
         var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
         var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
+
+        var isVar = Object.keys(globalVars).includes(chunkedLine_cmd)
         console.log('Type:',type,', Reaction:',reaction)
         // continuex    
         reaction
            ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
-           : errorHandler.commandError(chunkedLine_cmd)
+           : isVar
+                ? executionHandler.handleMoreOps(chunkedLine_assignment, chunkedLine_cmd)
+                : errorHandler.commandError(chunkedLine_cmd)
     });
-    console.log('vars: ',executionHandler.userDefined_vars)
+    console.log('vars:',globalVars)
 })
