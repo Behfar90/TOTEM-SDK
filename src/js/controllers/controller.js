@@ -9,7 +9,7 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
             labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
         case "controlStatement":
-            controlStatementController.controlStatementController()
+            controlStatementController.controlStatementController(chunkedLine_assignment, chunkedLine_cmd)
     
         default:
             break;

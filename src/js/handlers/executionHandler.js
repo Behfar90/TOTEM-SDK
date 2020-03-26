@@ -4,6 +4,8 @@ let errorHandler = require('./errorHandler.js')
 
 // user-defined variables as a global hash map
 var userDefined_vars = {};
+// global array to keep track of all executions done by user for TOTEM computation
+var TOTEM_executions = []
 
 // not-allowed naming convention
 var notAllowedNamingConvention = ['(', ')', '-', '*', '%', '$']
@@ -17,12 +19,13 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let noError = true;
         
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
+            TOTEM_executions.push('assign')
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
             : userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
         }
         else if( isOperation[0] ) {
-            console.log('there is an operation')
+            
             var arguments = righSideOfEquition.match(/\((.*)\)/).pop().split(',')
             if (arguments.length == 2) { // number of arguments should be exactly 2
                 arguments.forEach( function(arg, i) {
@@ -39,6 +42,7 @@ let handleNumber = function handleNumber(chunk, cmd) {
                 }, arguments);
                 // console.log(arguments)
                 if (noError) {
+                    TOTEM_executions.push('MathOperation')
                    switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
@@ -73,6 +77,7 @@ let handleNumber = function handleNumber(chunk, cmd) {
             notAllowedNamingConvention.some(el => chunk.includes(el))
             ?   errorHandler.namingError(chunk)
             :   userDefined_vars[chunk] = 0; // default is var = 0
+                TOTEM_executions.push('assign')
     }
 }
 
@@ -85,7 +90,7 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
         let righSideOfEquition = plain_assignment.substr(plain_assignment.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
         if( isOperation[0] ) {
-            console.log('there is an operation')
+           
             var arguments = righSideOfEquition.match(/\((.*)\)/).pop().split(',')
             if (arguments.length == 2) { // number of arguments should be exactly 2
                 arguments.forEach( function(arg, i) {
@@ -101,22 +106,23 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
                     }
                 }, arguments);
                 if (noError) {
-                   switch (isOperation[1]) {
-                    case "add":
-                        userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
-                        break;
-                    case "sub":
-                        userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
-                        break;
-                    case "mul":
-                        userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
-                        break;
-                    case "div":
-                        userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
-                        break;
-                    case "pow":
-                        userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
-                        break;
+                    TOTEM_executions.push('MathOperation')
+                    switch (isOperation[1]) {
+                        case "add":
+                            userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
+                            break;
+                        case "sub":
+                            userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
+                            break;
+                        case "mul":
+                            userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
+                            break;
+                        case "div":
+                            userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
+                            break;
+                        case "pow":
+                            userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
+                            break;
 
                     }
                 }
@@ -144,5 +150,6 @@ function opsDetector(target, pattern) {
 module.exports = {
     handleNumber: handleNumber,
     handleMoreOps: handleMoreOps,
-    userDefined_vars: userDefined_vars
+    userDefined_vars: userDefined_vars,
+    TOTEM_executions: TOTEM_executions
 }

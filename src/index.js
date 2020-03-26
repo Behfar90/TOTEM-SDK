@@ -10618,6 +10618,7 @@ var $ = require('jquery')
 // Global variables
 var ruleLines = new Array(); //variable to keep rules
 var globalVars = executionHandler.userDefined_vars //global vars defined by user
+var executions = executionHandler.TOTEM_executions //global array of executions done by user
 
 $(document).ready(function() {
     $.ajax({
@@ -10679,12 +10680,14 @@ document.querySelector('button').addEventListener("click", function (){
                 : errorHandler.commandError(chunkedLine_cmd)
     });
     console.log('vars:',globalVars)
+    console.log('TOTEM executions:',executions)
 })
 },{"./controllers/controller.js":8,"./handlers/errorHandler.js":10,"./handlers/executionHandler.js":11,"jquery":2}],7:[function(require,module,exports){
 
 // func to control control statements
-let controlStatementController = function controlStatementController() {
-    
+let controlStatementController = function controlStatementController(chunkedLine_assignment, chunkedLine_cmd) {
+    let f = chunkedLine_cmd + chunkedLine_assignment
+    console.log(eval(f))
 }
 
 module.exports = {
@@ -10702,7 +10705,7 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
             labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
         case "controlStatement":
-            controlStatementController.controlStatementController()
+            controlStatementController.controlStatementController(chunkedLine_assignment, chunkedLine_cmd)
     
         default:
             break;
@@ -10789,6 +10792,8 @@ let errorHandler = require('./errorHandler.js')
 
 // user-defined variables as a global hash map
 var userDefined_vars = {};
+// global array to keep track of all executions done by user for TOTEM computation
+var TOTEM_executions = []
 
 // not-allowed naming convention
 var notAllowedNamingConvention = ['(', ')', '-', '*', '%', '$']
@@ -10802,12 +10807,13 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let noError = true;
         
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
+            TOTEM_executions.push('assign')
             cmd == "int"
             ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
             : userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
         }
         else if( isOperation[0] ) {
-            console.log('there is an operation')
+            
             var arguments = righSideOfEquition.match(/\((.*)\)/).pop().split(',')
             if (arguments.length == 2) { // number of arguments should be exactly 2
                 arguments.forEach( function(arg, i) {
@@ -10824,6 +10830,7 @@ let handleNumber = function handleNumber(chunk, cmd) {
                 }, arguments);
                 // console.log(arguments)
                 if (noError) {
+                    TOTEM_executions.push('MathOperation')
                    switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
@@ -10858,6 +10865,7 @@ let handleNumber = function handleNumber(chunk, cmd) {
             notAllowedNamingConvention.some(el => chunk.includes(el))
             ?   errorHandler.namingError(chunk)
             :   userDefined_vars[chunk] = 0; // default is var = 0
+                TOTEM_executions.push('assign')
     }
 }
 
@@ -10870,7 +10878,7 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
         let righSideOfEquition = plain_assignment.substr(plain_assignment.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
         if( isOperation[0] ) {
-            console.log('there is an operation')
+           
             var arguments = righSideOfEquition.match(/\((.*)\)/).pop().split(',')
             if (arguments.length == 2) { // number of arguments should be exactly 2
                 arguments.forEach( function(arg, i) {
@@ -10886,22 +10894,23 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
                     }
                 }, arguments);
                 if (noError) {
-                   switch (isOperation[1]) {
-                    case "add":
-                        userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
-                        break;
-                    case "sub":
-                        userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
-                        break;
-                    case "mul":
-                        userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
-                        break;
-                    case "div":
-                        userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
-                        break;
-                    case "pow":
-                        userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
-                        break;
+                    TOTEM_executions.push('MathOperation')
+                    switch (isOperation[1]) {
+                        case "add":
+                            userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
+                            break;
+                        case "sub":
+                            userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
+                            break;
+                        case "mul":
+                            userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
+                            break;
+                        case "div":
+                            userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
+                            break;
+                        case "pow":
+                            userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
+                            break;
 
                     }
                 }
@@ -10929,7 +10938,8 @@ function opsDetector(target, pattern) {
 module.exports = {
     handleNumber: handleNumber,
     handleMoreOps: handleMoreOps,
-    userDefined_vars: userDefined_vars
+    userDefined_vars: userDefined_vars,
+    TOTEM_executions: TOTEM_executions
 }
 },{"./errorHandler.js":10,"./operationsHandler.js":12}],12:[function(require,module,exports){
 // importing stuff
