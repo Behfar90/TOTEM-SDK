@@ -6,7 +6,7 @@ let errorHandler = require('./errorHandler.js')
 var userDefined_vars = {};
 
 // not-allowed naming convention
-var notAllowedNamingConvention = ['(', ')', '-', '*']
+var notAllowedNamingConvention = ['(', ')', '-', '*', '%', '$']
 
 // func to handle numbers
 let handleNumber = function handleNumber(chunk, cmd) {
