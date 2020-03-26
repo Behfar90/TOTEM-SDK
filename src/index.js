@@ -10774,6 +10774,7 @@ let commandError = function commandErrorHandler(cmd) {
   }
 
 
+  
 
 module.exports = {
     commandError: commandError,
@@ -10788,6 +10789,9 @@ let errorHandler = require('./errorHandler.js')
 
 // user-defined variables as a global hash map
 var userDefined_vars = {};
+
+// not-allowed naming convention
+var notAllowedNamingConvention = ['(', ')', '-', '*']
 
 // func to handle numbers
 let handleNumber = function handleNumber(chunk, cmd) {
@@ -10851,7 +10855,9 @@ let handleNumber = function handleNumber(chunk, cmd) {
         }
 
     } else {
-        userDefined_vars[chunk] = 0; // default is var = 0
+            notAllowedNamingConvention.some(el => chunk.includes(el))
+            ?   errorHandler.namingError(chunk)
+            :   userDefined_vars[chunk] = 0; // default is var = 0
     }
 }
 
@@ -10879,7 +10885,6 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
                         }
                     }
                 }, arguments);
-                // console.log(arguments)
                 if (noError) {
                    switch (isOperation[1]) {
                     case "add":
@@ -10895,7 +10900,7 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
                         userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
                         break;
                     case "pow":
-                        userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
+                        userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
                         break;
 
                     }
