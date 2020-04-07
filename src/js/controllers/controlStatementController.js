@@ -6,15 +6,17 @@ let errorHandler = require('../handlers/errorHandler.js');
 let controlStatementController = function controlStatementController(chunkedLine_assignment, reaction) {
     switch (reaction) {
         case "handleForLoop":
-            if (chunkedLine_assignment.match(/\((.*)\)/)) {
+            if (chunkedLine_assignment.match(/\((.*)\)/) && chunkedLine_assignment.match(/\{(.*)\}/)) {
+                // if it contains statements and operations(curly brackets) then follows
                 let loop_statements = chunkedLine_assignment.match(/\((.*)\)/).pop().replace(/\s/g,'')
+                let loop_operations = chunkedLine_assignment.match(/\{(.*)\}/).pop().replace(/\s/g,'')
                 loop_statements = loop_statements.split(';')
-                if (loop_statements.length == 3) {
-                    let loopDefinition = loop_statements[0]
-                    executionHandler.handleNumber(loopDefinition,"int")    
-                } else {
-                    errorHandler.CTRLStatementError('statementsLength')
-                }
+
+                loop_statements.length == 3
+                ?   loop_operations.length
+                    ? executionHandler.handleForLoop(loop_statements,loop_operations)
+                    : errorHandler.CTRLStatementError('operationsLength')   
+                :   errorHandler.CTRLStatementError('statementsLength')
             } else {
                 errorHandler.CTRLStatementError('statementsDefinition')
             }
@@ -23,8 +25,6 @@ let controlStatementController = function controlStatementController(chunkedLine
         default:
             break;
     }
-    
-    // executionHandler.handleForLoop()
 }
 
 module.exports = {

@@ -21,9 +21,11 @@ let commandError = function commandErrorHandler(cmd) {
       case 'argNumberError':
         $('#error').append('There must be 2 arguments in operating functions.<br />')
         break
+
       case 'noSuchOperation':
         $('#error').append('The function ' + name + ' is not defined.<br />')
         break;
+        
       case 'undefinedVar':  
         $('#error').append('Variable ' + name + ' is not defined.<br />')
         break;
@@ -36,6 +38,11 @@ let commandError = function commandErrorHandler(cmd) {
       case 'statementsLength':
         $('#error').append("For loop must have 3 statements in definition.<br />")
         break;
+
+      case 'operationsLength':
+        $('#error').append("For loop has no operations in {}.<br />")
+        break;
+
       case 'statementsDefinition':
         $('#error').append("For loop definition is not correct.<br />")
         break;

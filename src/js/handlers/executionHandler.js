@@ -135,8 +135,9 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
 }
 
 // func to handle for loop
-let handleForLoop = function handleForLoop(statements) {
-
+let handleForLoop = function handleForLoop(statements, operations) {
+    let loopDefinition = statements[0]
+    handleNumber(loopDefinition,"int")
 }
 
 // func to find if user has used one the allowed ops
