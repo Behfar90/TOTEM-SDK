@@ -1,12 +1,12 @@
 // importing stuff
 let ops = require('./operationsHandler.js')
 let errorHandler = require('./errorHandler.js')
-
+//--------------------------------------------------------------------------------
 // user-defined variables as a global hash map
 var userDefined_vars = {};
 // global array to keep track of all executions done by user for TOTEM computation
 var TOTEM_executions = []
-
+//--------------------------------------------------------------------------------
 // not-allowed naming convention
 var notAllowedNamingConvention = ['(', ')', '-', '*', '%', '$']
 
@@ -17,7 +17,6 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
         let noError = true;
-        
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
             TOTEM_executions.push('assign')
             cmd == "int"
@@ -135,6 +134,11 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
     }
 }
 
+// func to handle for loop
+let handleForLoop = function handleForLoop(statements) {
+
+}
+
 // func to find if user has used one the allowed ops
 function opsDetector(target, pattern) {
     opt = false
@@ -149,6 +153,7 @@ function opsDetector(target, pattern) {
 
 module.exports = {
     handleNumber: handleNumber,
+    handleForLoop: handleForLoop,
     handleMoreOps: handleMoreOps,
     userDefined_vars: userDefined_vars,
     TOTEM_executions: TOTEM_executions

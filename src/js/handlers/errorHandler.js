@@ -30,11 +30,27 @@ let commandError = function commandErrorHandler(cmd) {
     }
   }
 
+   // throwing error if anything not allowed or incorrect happens during control statements
+   let CTRLStatementError = function CTRLStatementError(errorType) {
+    switch (errorType) {
+      case 'statementsLength':
+        $('#error').append("For loop must have 3 statements in definition.<br />")
+        break;
+      case 'statementsDefinition':
+        $('#error').append("For loop definition is not correct.<br />")
+        break;
+    
+      default:
+        break;
+    }
+  }
+
 
   
 
 module.exports = {
     commandError: commandError,
     namingError: namingError,
-    operationError: operationError
+    operationError: operationError,
+    CTRLStatementError: CTRLStatementError
 }

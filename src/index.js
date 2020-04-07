@@ -10683,17 +10683,39 @@ document.querySelector('button').addEventListener("click", function (){
     console.log('TOTEM executions:',executions)
 })
 },{"./controllers/controller.js":8,"./handlers/errorHandler.js":10,"./handlers/executionHandler.js":11,"jquery":2}],7:[function(require,module,exports){
+//importing stuff
+let executionHandler = require('../handlers/executionHandler.js');
+let errorHandler = require('../handlers/errorHandler.js'); 
 
 // func to control control statements
-let controlStatementController = function controlStatementController(chunkedLine_assignment, chunkedLine_cmd) {
-    let f = chunkedLine_cmd + chunkedLine_assignment
-    console.log(eval(f))
+let controlStatementController = function controlStatementController(chunkedLine_assignment, reaction) {
+    switch (reaction) {
+        case "handleForLoop":
+            if (chunkedLine_assignment.match(/\((.*)\)/)) {
+                let loop_statements = chunkedLine_assignment.match(/\((.*)\)/).pop().replace(/\s/g,'')
+                loop_statements = loop_statements.split(';')
+                if (loop_statements.length == 3) {
+                    let loopDefinition = loop_statements[0]
+                    executionHandler.handleNumber(loopDefinition,"int")    
+                } else {
+                    errorHandler.CTRLStatementError('statementsLength')
+                }
+            } else {
+                errorHandler.CTRLStatementError('statementsDefinition')
+            }
+            break;
+    
+        default:
+            break;
+    }
+    
+    // executionHandler.handleForLoop()
 }
 
 module.exports = {
     controlStatementController: controlStatementController,
 }
-},{}],8:[function(require,module,exports){
+},{"../handlers/errorHandler.js":10,"../handlers/executionHandler.js":11}],8:[function(require,module,exports){
 // importing stuff
 let labelledTypeController = require('../controllers/labelledTypeController.js');
 let controlStatementController = require('../controllers/controlStatementController.js');
@@ -10705,7 +10727,7 @@ let controller = function typeController(chunkedLine_assignment, chunkedLine_cmd
             labelledTypeController.labelledTypeController(chunkedLine_assignment, chunkedLine_cmd, reaction)
             break;
         case "controlStatement":
-            controlStatementController.controlStatementController(chunkedLine_assignment, chunkedLine_cmd)
+            controlStatementController.controlStatementController(chunkedLine_assignment, reaction)
     
         default:
             break;
@@ -10776,25 +10798,41 @@ let commandError = function commandErrorHandler(cmd) {
     }
   }
 
+   // throwing error if anything not allowed or incorrect happens during control statements
+   let CTRLStatementError = function CTRLStatementError(errorType) {
+    switch (errorType) {
+      case 'statementsLength':
+        $('#error').append("For loop must have 3 statements in definition.<br />")
+        break;
+      case 'statementsDefinition':
+        $('#error').append("For loop definition is not correct.<br />")
+        break;
+    
+      default:
+        break;
+    }
+  }
+
 
   
 
 module.exports = {
     commandError: commandError,
     namingError: namingError,
-    operationError: operationError
+    operationError: operationError,
+    CTRLStatementError: CTRLStatementError
 }
 
 },{"jquery":2}],11:[function(require,module,exports){
 // importing stuff
 let ops = require('./operationsHandler.js')
 let errorHandler = require('./errorHandler.js')
-
+//--------------------------------------------------------------------------------
 // user-defined variables as a global hash map
 var userDefined_vars = {};
 // global array to keep track of all executions done by user for TOTEM computation
 var TOTEM_executions = []
-
+//--------------------------------------------------------------------------------
 // not-allowed naming convention
 var notAllowedNamingConvention = ['(', ')', '-', '*', '%', '$']
 
@@ -10805,7 +10843,6 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
         let noError = true;
-        
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
             TOTEM_executions.push('assign')
             cmd == "int"
@@ -10923,6 +10960,11 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
     }
 }
 
+// func to handle for loop
+let handleForLoop = function handleForLoop(statements) {
+
+}
+
 // func to find if user has used one the allowed ops
 function opsDetector(target, pattern) {
     opt = false
@@ -10937,6 +10979,7 @@ function opsDetector(target, pattern) {
 
 module.exports = {
     handleNumber: handleNumber,
+    handleForLoop: handleForLoop,
     handleMoreOps: handleMoreOps,
     userDefined_vars: userDefined_vars,
     TOTEM_executions: TOTEM_executions
