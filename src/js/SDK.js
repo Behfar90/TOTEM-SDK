@@ -33,7 +33,7 @@ function processRules(allText) {
             ruleLines.push(tarr);
         }
     }
-    console.log(ruleLines) // just to see rules at console
+    console.log('Rules:',ruleLines) // just to see rules at console
 }
 
 // func to search through the commands and return its appropriate reaction and type
@@ -51,7 +51,24 @@ function getRuleValues(cmdUser, key) {
 document.querySelector('button').addEventListener("click", function (){
     var userCodeValue = $("#userCode").val()
     var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
-    allCodeValueLines = allCodeValueLines.filter(line => line);
+    let loopLine = []
+    allCodeValueLines.forEach(function(line, index) {
+        if (line.substr(0,line.indexOf(' ')) == 'for') {
+            loopLine.push(index)
+        }
+        if (loopLine.length && line.includes('}')) {
+            loopLine.push(index)
+        }
+        if (loopLine.length > 1) {
+            while (allCodeValueLines[loopLine[0] + 1]){
+                allCodeValueLines[loopLine[0]] += allCodeValueLines[loopLine[0]+1]
+                if (allCodeValueLines[loopLine[0] + 2]) {
+                    allCodeValueLines[loopLine[0]] += ";"
+                }
+                allCodeValueLines.splice(loopLine[0] + 1, 1);
+            }
+        }
+    });
     allCodeValueLines.forEach(userLine => {
 
         var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
