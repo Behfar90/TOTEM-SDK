@@ -10710,7 +10710,8 @@ let controlStatementController = function controlStatementController(chunkedLine
         case "handleForLoop":
             if (chunkedLine_assignment.match(/\((.*)\)/) && chunkedLine_assignment.match(/\{(.*)\}/)) {
                 // if it contains statements and operations(curly brackets) then follows
-                let loop_statements = chunkedLine_assignment.match(/\((.*)\)/).pop().replace(/\s/g,'')
+                let loop_statements = chunkedLine_assignment.match(/\(([^)]+)\)/).pop().replace(/\s/g,'')
+                
                 let loop_operations = chunkedLine_assignment.match(/\{(.*)\}/).pop().replace(/\s/g,'')
                 loop_statements = loop_statements.split(';')
 
@@ -10868,10 +10869,13 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
         let noError = true;
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
-            TOTEM_executions.push('assign')
-            cmd == "int"
-            ? userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
-            : userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
+            if(cmd == "int") {
+                TOTEM_executions.push('INTassign')
+                userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
+            } else {
+                TOTEM_executions.push('FLOATassign')
+                userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
+            }
         }
         else if( isOperation[0] ) {
             
@@ -10926,7 +10930,9 @@ let handleNumber = function handleNumber(chunk, cmd) {
             notAllowedNamingConvention.some(el => chunk.includes(el))
             ?   errorHandler.namingError(chunk)
             :   userDefined_vars[chunk] = 0; // default is var = 0
-                TOTEM_executions.push('assign')
+                cmd == "int"
+                ?    TOTEM_executions.push('INTassign')
+                :    TOTEM_executions.push('FLOATassign')
     }
 }
 
@@ -10989,6 +10995,7 @@ let handleForLoop = function handleForLoop(statements, operations) {
     let loopDefinition = statements[0]
     handleNumber(loopDefinition,"int")
     console.log(statements,operations)
+
 }
 
 // func to find if user has used one the allowed ops
