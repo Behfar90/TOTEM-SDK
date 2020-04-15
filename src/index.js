@@ -10658,8 +10658,29 @@ function getRuleValues(cmdUser, key) {
     return false
 }
 
+//func to read and pass each line to the controller if there is a reaction
+let lineReader = function lineReader(userLine) {
+    var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
+    var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
+    var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
+    var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
+
+    var isVar = Object.keys(globalVars).includes(chunkedLine_cmd)
+    console.log('Type:',type,', Reaction:',reaction)
+    // continue
+    reaction
+       ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
+       : isVar
+            ? executionHandler.handleMoreOps(chunkedLine_assignment, chunkedLine_cmd)
+            : errorHandler.commandError(chunkedLine_cmd)
+}
+
+
+
 // func to process and execute user's code
 document.querySelector('button').addEventListener("click", function (){
+    exports.lineReader = lineReader
+    
     var userCodeValue = $("#userCode").val()
     var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
     let loopLine = []
@@ -10681,24 +10702,13 @@ document.querySelector('button').addEventListener("click", function (){
         }
     });
     allCodeValueLines.forEach(userLine => {
-
-        var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
-        var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
-        var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
-        var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
-
-        var isVar = Object.keys(globalVars).includes(chunkedLine_cmd)
-        console.log('Type:',type,', Reaction:',reaction)
-        // continuex    
-        reaction
-           ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
-           : isVar
-                ? executionHandler.handleMoreOps(chunkedLine_assignment, chunkedLine_cmd)
-                : errorHandler.commandError(chunkedLine_cmd)
+        lineReader(userLine)
     });
+
     console.log('vars:',globalVars)
     console.log('TOTEM executions:',executions)
 })
+
 },{"./controllers/controller.js":8,"./handlers/errorHandler.js":10,"./handlers/executionHandler.js":11,"jquery":2}],7:[function(require,module,exports){
 //importing stuff
 let executionHandler = require('../handlers/executionHandler.js');
@@ -10712,7 +10722,7 @@ let controlStatementController = function controlStatementController(chunkedLine
                 // if it contains statements and operations(curly brackets) then follows
                 let loop_statements = chunkedLine_assignment.match(/\(([^)]+)\)/).pop().replace(/\s/g,'')
                 
-                let loop_operations = chunkedLine_assignment.match(/\{(.*)\}/).pop().replace(/\s/g,'')
+                let loop_operations = chunkedLine_assignment.match(/\{(.*)\}/).pop()
                 loop_statements = loop_statements.split(';')
 
                 loop_statements.length == 3
@@ -10832,7 +10842,7 @@ let commandError = function commandErrorHandler(cmd) {
       case 'statementsDefinition':
         $('#error').append("For loop definition is not correct.<br />")
         break;
-    
+        
       default:
         break;
     }
@@ -10852,8 +10862,9 @@ module.exports = {
 // importing stuff
 let ops = require('./operationsHandler.js')
 let errorHandler = require('./errorHandler.js')
+let SDK = require('../SDK.js')
 //--------------------------------------------------------------------------------
-// user-defined variables as a global hash map
+// user-defined variables as a global object
 var userDefined_vars = {};
 // global array to keep track of all executions done by user for TOTEM computation
 var TOTEM_executions = []
@@ -10993,8 +11004,24 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
 // func to handle for loop
 let handleForLoop = function handleForLoop(statements, operations) {
     let loopDefinition = statements[0]
+    let loopCondition = statements[1]
     handleNumber(loopDefinition,"int")
-    console.log(statements,operations)
+    let operationsArray = operations.split(';')
+    let numberOfLoops = 0
+    let loopStarter = Object.values(userDefined_vars)[Object.values(userDefined_vars).length - 1]
+    if (loopCondition.match(/\<=(.*)/)) {
+        numberOfLoops = parseInt(loopCondition.match(/\<=(.*)/).pop()) - loopStarter + 1
+    } else {
+        numberOfLoops = parseInt(loopCondition.match(/\<(.*)/).pop()) - loopStarter
+    }
+
+    operationsArray.forEach(line => {
+        if (line) {
+            SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
+        }
+    })
+
+    console.log(numberOfLoops)
 
 }
 
@@ -11017,7 +11044,7 @@ module.exports = {
     userDefined_vars: userDefined_vars,
     TOTEM_executions: TOTEM_executions
 }
-},{"./errorHandler.js":10,"./operationsHandler.js":12}],12:[function(require,module,exports){
+},{"../SDK.js":6,"./errorHandler.js":10,"./operationsHandler.js":12}],12:[function(require,module,exports){
 // importing stuff
 const exactMath = require('exact-math');
 

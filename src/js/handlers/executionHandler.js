@@ -1,8 +1,9 @@
 // importing stuff
 let ops = require('./operationsHandler.js')
 let errorHandler = require('./errorHandler.js')
+let SDK = require('../SDK.js')
 //--------------------------------------------------------------------------------
-// user-defined variables as a global hash map
+// user-defined variables as a global object
 var userDefined_vars = {};
 // global array to keep track of all executions done by user for TOTEM computation
 var TOTEM_executions = []
@@ -142,8 +143,26 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
 // func to handle for loop
 let handleForLoop = function handleForLoop(statements, operations) {
     let loopDefinition = statements[0]
+    let loopCondition = statements[1]
     handleNumber(loopDefinition,"int")
-    console.log(statements,operations)
+    let operationsArray = operations.split(';')
+    let numberOfLoops = 0
+    let loopStarter = Object.values(userDefined_vars)[Object.values(userDefined_vars).length - 1]
+    if (loopCondition.match(/\<=(.*)/)) {
+        numberOfLoops = parseInt(loopCondition.match(/\<=(.*)/).pop()) - loopStarter + 1
+    } else {
+        numberOfLoops = parseInt(loopCondition.match(/\<(.*)/).pop()) - loopStarter
+    }
+
+    operationsArray.forEach(line => {
+        if (line) {
+            SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
+        }
+    })
+
+    Array.from(Array(numberOfLoops - 1)).forEach(() => {
+        SDK
+      });
 
 }
 

@@ -47,8 +47,29 @@ function getRuleValues(cmdUser, key) {
     return false
 }
 
+//func to read and pass each line to the controller if there is a reaction
+let lineReader = function lineReader(userLine) {
+    var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
+    var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
+    var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
+    var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
+
+    var isVar = Object.keys(globalVars).includes(chunkedLine_cmd)
+    console.log('Type:',type,', Reaction:',reaction)
+    // continue
+    reaction
+       ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
+       : isVar
+            ? executionHandler.handleMoreOps(chunkedLine_assignment, chunkedLine_cmd)
+            : errorHandler.commandError(chunkedLine_cmd)
+}
+
+
+
 // func to process and execute user's code
 document.querySelector('button').addEventListener("click", function (){
+    exports.lineReader = lineReader
+    
     var userCodeValue = $("#userCode").val()
     var allCodeValueLines = userCodeValue.split(/\r\n|\n/);
     let loopLine = []
@@ -70,21 +91,9 @@ document.querySelector('button').addEventListener("click", function (){
         }
     });
     allCodeValueLines.forEach(userLine => {
-
-        var chunkedLine_cmd = userLine.substr(0,userLine.indexOf(' '));
-        var chunkedLine_assignment = userLine.substr(userLine.indexOf(' ')+1);
-        var reaction = getRuleValues(chunkedLine_cmd,"HOWTOREACT")
-        var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
-
-        var isVar = Object.keys(globalVars).includes(chunkedLine_cmd)
-        console.log('Type:',type,', Reaction:',reaction)
-        // continuex    
-        reaction
-           ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
-           : isVar
-                ? executionHandler.handleMoreOps(chunkedLine_assignment, chunkedLine_cmd)
-                : errorHandler.commandError(chunkedLine_cmd)
+        lineReader(userLine)
     });
+
     console.log('vars:',globalVars)
     console.log('TOTEM executions:',executions)
 })

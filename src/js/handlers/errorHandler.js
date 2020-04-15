@@ -46,7 +46,7 @@ let commandError = function commandErrorHandler(cmd) {
       case 'statementsDefinition':
         $('#error').append("For loop definition is not correct.<br />")
         break;
-    
+        
       default:
         break;
     }
