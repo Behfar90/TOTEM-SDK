@@ -11003,9 +11003,11 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
 
 // func to handle for loop
 let handleForLoop = function handleForLoop(statements, operations) {
+
     let loopDefinition = statements[0]
     let loopCondition = statements[1]
     handleNumber(loopDefinition,"int")
+    let loopIndex = Object.keys(userDefined_vars)[Object.keys(userDefined_vars).length - 1]
     let operationsArray = operations.split(';')
     let numberOfLoops = 0
     let loopStarter = Object.values(userDefined_vars)[Object.values(userDefined_vars).length - 1]
@@ -11015,14 +11017,18 @@ let handleForLoop = function handleForLoop(statements, operations) {
         numberOfLoops = parseInt(loopCondition.match(/\<(.*)/).pop()) - loopStarter
     }
 
-    operationsArray.forEach(line => {
-        if (line) {
-            SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
+    let incrementStatement = loopIndex + ' = add(' + loopIndex + ',1)'
+
+    for (let dummy = 0; dummy < numberOfLoops; dummy++) {
+        if (dummy != 0) {
+            SDK.lineReader(incrementStatement)   
         }
-    })
-
-    console.log(numberOfLoops)
-
+        operationsArray.forEach(line => {
+            if (line) {
+                SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
+            }
+        })
+    }
 }
 
 // func to find if user has used one the allowed ops
