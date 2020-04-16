@@ -55,7 +55,9 @@ let lineReader = function lineReader(userLine) {
     var type = getRuleValues(chunkedLine_cmd,"CMDTYPE")
 
     var isVar = Object.keys(globalVars).includes(chunkedLine_cmd)
-    console.log('Type:',type,', Reaction:',reaction)
+    if (type) {
+        console.log('Type:',type,', Reaction:',reaction)
+    }
     // continue
     reaction
        ? controller.controller(chunkedLine_assignment, chunkedLine_cmd, type, reaction)
