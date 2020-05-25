@@ -49,30 +49,26 @@ let handleNumber = function handleNumber(chunk, cmd) {
                 }, arguments);
                 // console.log(arguments)
                 if (noError) {
-                    TOTEM_operators.push('MathOperation')
                    switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
-                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '+' + arguments[1]) 
                         break;
                     case "sub":
                         userDefined_vars[leftSideOfEquition] = ops.sub(arguments[0],arguments[1])
-                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '-' + arguments[1]) 
                         break;
                     case "mul":
                         userDefined_vars[leftSideOfEquition] = ops.mul(arguments[0],arguments[1])
-                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '*' + arguments[1]) 
                         break;
                     case "div":
                         userDefined_vars[leftSideOfEquition] = ops.div(arguments[0],arguments[1])
-                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '/' + arguments[1]) 
                         break;
                     case "pow":
                         userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
-                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '^' + arguments[1]) 
                         break;
 
                     }
+                    TOTEM_operators.push('MathOperation')
+                    mapped_executions.push(leftSideOfEquition + '=' + righSideOfEquition) 
                 }
                 
             }
@@ -124,30 +120,26 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
                     }
                 }, arguments);
                 if (noError) {
-                    TOTEM_operators.push('MathOperation')
                     switch (isOperation[1]) {
                         case "add":
                             userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
-                            mapped_executions.push(cmdVar + '=' + arguments[0] + '+' + arguments[1]) 
                             break;
                         case "sub":
                             userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
-                            mapped_executions.push(cmdVar + '=' + arguments[0] + '-' + arguments[1]) 
                             break;
                         case "mul":
                             userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
-                            mapped_executions.push(cmdVar + '=' + arguments[0] + '*' + arguments[1]) 
                             break;
                         case "div":
                             userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
-                            mapped_executions.push(cmdVar + '=' + arguments[0] + '/' + arguments[1]) 
                             break;
                         case "pow":
                             userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
-                            mapped_executions.push(cmdVar + '=' + arguments[0] + '^' + arguments[1]) 
                             break;
 
                     }
+                    TOTEM_operators.push('MathOperation')
+                    mapped_executions.push(cmdVar + '=' + righSideOfEquition)
                 }
                 
             }
