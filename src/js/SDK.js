@@ -7,7 +7,8 @@ var $ = require('jquery')
 // Global variables
 var ruleLines = new Array(); //variable to keep rules
 var globalVars = executionHandler.userDefined_vars //global vars defined by user
-var executions = executionHandler.TOTEM_executions //global array of executions done by user
+var operators = executionHandler.TOTEM_operators //global array of executions done by user
+var mapped_executions = executionHandler.mapped_executions //global array of mapped executions of user's code
 
 $(document).ready(function() {
     $.ajax({
@@ -97,5 +98,6 @@ document.querySelector('button').addEventListener("click", function (){
     });
 
     console.log('vars:',globalVars)
-    console.log('TOTEM executions:',executions)
+    console.log('operators:',operators)
+    console.log('mapped executions:',mapped_executions)
 })

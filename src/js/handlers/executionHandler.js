@@ -5,8 +5,10 @@ let SDK = require('../SDK.js')
 //--------------------------------------------------------------------------------
 // user-defined variables as a global object
 var userDefined_vars = {};
-// global array to keep track of all executions done by user for TOTEM computation
-var TOTEM_executions = []
+// global array to keep track of all operators within the Data Consumer's code for TOTEM computation
+var TOTEM_operators = []
+// global array to store mapped executions of Data Consumer's submitted code
+var mapped_executions = []
 //--------------------------------------------------------------------------------
 // not-allowed naming convention
 var notAllowedNamingConvention = ['(', ')', '-', '*', '%', '$']
@@ -20,10 +22,12 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let noError = true;
         if ( !isNaN(parseInt(righSideOfEquition)) ) {  // if it is a number
             if(cmd == "int") {
-                TOTEM_executions.push('INTassign')
+                TOTEM_operators.push('INTassign')
+                mapped_executions.push(cmd + ' ' + chunk)
                 userDefined_vars[leftSideOfEquition] = parseInt(righSideOfEquition)
             } else {
-                TOTEM_executions.push('FLOATassign')
+                TOTEM_operators.push('FLOATassign')
+                mapped_executions.push(cmd + ' ' + chunk)
                 userDefined_vars[leftSideOfEquition] = parseFloat(righSideOfEquition)
             }
         }
@@ -45,22 +49,27 @@ let handleNumber = function handleNumber(chunk, cmd) {
                 }, arguments);
                 // console.log(arguments)
                 if (noError) {
-                    TOTEM_executions.push('MathOperation')
+                    TOTEM_operators.push('MathOperation')
                    switch (isOperation[1]) {
                     case "add":
                         userDefined_vars[leftSideOfEquition] = ops.add(arguments[0],arguments[1])
+                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '+' + arguments[1]) 
                         break;
                     case "sub":
                         userDefined_vars[leftSideOfEquition] = ops.sub(arguments[0],arguments[1])
+                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '-' + arguments[1]) 
                         break;
                     case "mul":
                         userDefined_vars[leftSideOfEquition] = ops.mul(arguments[0],arguments[1])
+                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '*' + arguments[1]) 
                         break;
                     case "div":
                         userDefined_vars[leftSideOfEquition] = ops.div(arguments[0],arguments[1])
+                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '/' + arguments[1]) 
                         break;
                     case "pow":
                         userDefined_vars[leftSideOfEquition] = ops.pow(arguments[0],arguments[1])
+                        mapped_executions.push(leftSideOfEquition + '=' + arguments[0] + '^' + arguments[1]) 
                         break;
 
                     }
@@ -80,9 +89,13 @@ let handleNumber = function handleNumber(chunk, cmd) {
             notAllowedNamingConvention.some(el => chunk.includes(el))
             ?   errorHandler.namingError(chunk)
             :   userDefined_vars[chunk] = 0; // default is var = 0
-                cmd == "int"
-                ?    TOTEM_executions.push('INTassign')
-                :    TOTEM_executions.push('FLOATassign')
+                if (cmd == "int") {
+                    TOTEM_operators.push('INTassign')
+                    mapped_executions.push(cmd + ' ' + chunk + '=0') 
+                } else {
+                    TOTEM_operators.push('FLOATassign')
+                    mapped_executions.push(cmd + ' ' + chunk + '=0') 
+                } 
     }
 }
 
@@ -111,22 +124,27 @@ let handleMoreOps = function handleMoreOps(assignment, cmdVar) {
                     }
                 }, arguments);
                 if (noError) {
-                    TOTEM_executions.push('MathOperation')
+                    TOTEM_operators.push('MathOperation')
                     switch (isOperation[1]) {
                         case "add":
                             userDefined_vars[cmdVar] = ops.add(arguments[0],arguments[1])
+                            mapped_executions.push(cmdVar + '=' + arguments[0] + '+' + arguments[1]) 
                             break;
                         case "sub":
                             userDefined_vars[cmdVar] = ops.sub(arguments[0],arguments[1])
+                            mapped_executions.push(cmdVar + '=' + arguments[0] + '-' + arguments[1]) 
                             break;
                         case "mul":
                             userDefined_vars[cmdVar] = ops.mul(arguments[0],arguments[1])
+                            mapped_executions.push(cmdVar + '=' + arguments[0] + '*' + arguments[1]) 
                             break;
                         case "div":
                             userDefined_vars[cmdVar] = ops.div(arguments[0],arguments[1])
+                            mapped_executions.push(cmdVar + '=' + arguments[0] + '/' + arguments[1]) 
                             break;
                         case "pow":
                             userDefined_vars[cmdVar] = ops.pow(arguments[0],arguments[1])
+                            mapped_executions.push(cmdVar + '=' + arguments[0] + '^' + arguments[1]) 
                             break;
 
                     }
@@ -187,5 +205,6 @@ module.exports = {
     handleForLoop: handleForLoop,
     handleMoreOps: handleMoreOps,
     userDefined_vars: userDefined_vars,
-    TOTEM_executions: TOTEM_executions
+    TOTEM_operators: TOTEM_operators,
+    mapped_executions: mapped_executions,
 }
