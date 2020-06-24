@@ -27,11 +27,11 @@ function processRules(allText) {
     for (var i=1; i<allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
         if (data.length == headers.length) {
-            var tarr = new Map();
+            var ruleMap = new Map();
             for (var j=0; j<headers.length; j++) {
-                tarr.set(headers[j],data[j])
+                ruleMap.set(headers[j],data[j])
             }
-            ruleLines.push(tarr);
+            ruleLines.push(ruleMap);
         }
     }
     console.log('Rules:',ruleLines) // just to see rules at console
