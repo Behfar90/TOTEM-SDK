@@ -172,12 +172,15 @@ let handleForLoop = function handleForLoop(statements, operations) {
         if (dummy != 0) {
             SDK.lineReader(incrementStatement)   
         }
+        TOTEM_operators.push('RelationalOperation')
         operationsArray.forEach(line => {
             if (line) {
                 SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
             }
         })
     }
+    TOTEM_operators.push('MathOperation') // for the last index increment which exhausts the condition
+    TOTEM_operators.push('RelationalOperation') // for the last condition check which results in false
 }
 
 // func to find if user has used one the allowed ops
