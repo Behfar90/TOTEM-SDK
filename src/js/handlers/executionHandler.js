@@ -181,6 +181,9 @@ let handleForLoop = function handleForLoop(statements, operations) {
                 SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
             }
         })
+        if (dummy == numberOfLoops-1) {
+            SDK.lineReader(incrementStatement)
+        }
     }
     TOTEM_operators.push('MathOperation') // for the last index increment which exhausts the condition
     TOTEM_operators.push('RelationalOperation') // for the last condition check which results in false
