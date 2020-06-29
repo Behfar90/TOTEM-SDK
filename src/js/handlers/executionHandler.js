@@ -19,7 +19,6 @@ let handleNumber = function handleNumber(chunk, cmd) {
         let leftSideOfEquition = chunk.substr(0, chunk.indexOf('='))
         let righSideOfEquition = chunk.substr(chunk.indexOf("=") + 1)
         if (notAllowedNamingConvention.some(el => leftSideOfEquition.includes(el))) {
-            console.log('miad inja')
             errorHandler.namingError(leftSideOfEquition)
         } else {
             let isOperation = opsDetector(righSideOfEquition, Object.keys(ops)) // if it is an operation
