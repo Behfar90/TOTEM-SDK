@@ -11041,6 +11041,7 @@ let handleForLoop = function handleForLoop(statements, operations) {
             SDK.lineReader(incrementStatement)   
         }
         TOTEM_operators.push('RelationalOperation')
+        mapped_executions.push(loopCondition)
         operationsArray.forEach(line => {
             if (line) {
                 SDK.lineReader(line)    // sends the lines inside the loop back to the line reader at SDK.js   
@@ -11050,8 +11051,9 @@ let handleForLoop = function handleForLoop(statements, operations) {
             SDK.lineReader(incrementStatement)
         }
     }
-    TOTEM_operators.push('MathOperation') // for the last index increment which exhausts the condition
-    TOTEM_operators.push('RelationalOperation') // for the last condition check which results in false
+    // for the last condition check which results in false
+    TOTEM_operators.push('RelationalOperation')
+    mapped_executions.push(loopCondition)
 }
 
 // func to find if user has used one the allowed ops
